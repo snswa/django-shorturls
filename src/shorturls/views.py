@@ -35,6 +35,9 @@ def redirect(request, prefix, tiny):
     
     # If we got a fully-qualified URL, sweet.
     if urlparse.urlsplit(url)[0]:
+        get = request.GET.urlencode()
+        if get:
+            url = '{0}?{1}'.format(url, get)
         return HttpResponsePermanentRedirect(url)
     
     # Otherwise, we need to make a full URL by prepending a base URL.
@@ -49,5 +52,9 @@ def redirect(request, prefix, tiny):
     # Finally, fall back on the current request.
     else:
         base = 'http://%s/' % RequestSite(request).domain
-        
-    return HttpResponsePermanentRedirect(urlparse.urljoin(base, url))
+
+    url = urlparse.urljoin(base, url)
+    get = request.GET.urlencode()
+    if get:
+        url = '{0}?{1}'.format(url, get)
+    return HttpResponsePermanentRedirect(url)
